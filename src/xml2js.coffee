@@ -99,6 +99,7 @@ exports.defaults =
     chunkSize: 10000
     emptyTag: ''
     cdata: false
+    sortkey: '#index'
 
 class exports.ValidationError extends Error
   constructor: (message) ->
@@ -115,6 +116,7 @@ class exports.Builder
   buildObject: (rootObj) ->
     attrkey = @options.attrkey
     charkey = @options.charkey
+    sortkey = @options.sortkey
 
     # If there is a sane-looking first element to use as the root,
     # and the user hasn't specified a non-default rootName,
@@ -127,6 +129,8 @@ class exports.Builder
       rootName = @options.rootName
 
     render = (element, obj) =>
+      list = [];
+
       if typeof obj isnt 'object'
         # single element, just append it as text
         if @options.cdata && requiresCDATA obj
@@ -149,8 +153,25 @@ class exports.Builder
             else
               element = element.txt child
 
+          else if key is sortkey
+            # console.log(key)
+            # noop
+          else
+            if Array.isArray child
+              for own index, entry of child
+                list.push {key:key, child:entry}
+            else
+              list.push {key:key, child: child}
+
+        list.sort (a, b) ->
+          return (a.child[sortkey] || -1) - (b.child[sortkey] || -1)
+
+        for own index, entry of list
+          key = entry.key
+          child = entry.child
+
           # Case #3 Array data
-          else if Array.isArray child
+          if Array.isArray child
             for own index, entry of child
               if typeof entry is 'string'
                 if @options.cdata && requiresCDATA entry
@@ -336,6 +357,10 @@ class exports.Parser extends events.EventEmitter
           # re-check whether we can collapse the node now to just the charkey value
           if Object.keys(obj).length == 1 and charkey of obj and not @EXPLICIT_CHARKEY
             obj = obj[charkey]
+
+      else if @options.preserveChildrenOrder
+        index = if s then Math.max(Object.keys(s).length - 2, 0) else 0
+        obj[@options.sortkey] = index
 
       # check whether we closed all the open tags
       if stack.length > 0
