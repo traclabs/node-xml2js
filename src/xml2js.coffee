@@ -164,7 +164,7 @@ class exports.Builder
               list.push {key:key, child: child}
 
         list.sort (a, b) ->
-          return (a.child[sortkey] || -1) - (b.child[sortkey] || -1)
+          return (a.child && a.child[sortkey] || -1) - (b.child && b.child[sortkey] || -1)
 
         for own index, entry of list
           key = entry.key
@@ -190,7 +190,7 @@ class exports.Builder
             if typeof child is 'string' && @options.cdata && requiresCDATA child
               element = element.ele(key).raw(wrapCDATA child).up()
             else
-              element = element.ele(key, child.toString()).up()
+              element = element.ele(key, child && child.toString()).up()
 
       element
 
@@ -215,6 +215,9 @@ class exports.Parser extends events.EventEmitter
       if ! @options.tagNameProcessors
         @options.tagNameProcessors = []
       @options.tagNameProcessors.unshift processors.normalize
+
+    if @options.preserveChildrenOrder
+      @options.explicitCharkey = true;
 
     @reset()
 

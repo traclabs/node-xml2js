@@ -216,3 +216,22 @@ module.exports =
     actual = builder.buildObject obj
     diffeq expected, actual
     test.finish()
+
+  'test preserve child order when mixing tags w/o same name': (test) ->
+    expected = """
+      <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+      <xml>
+        <a>1</a>
+        <b>2</b>
+        <a>3</a>
+      </xml>
+    """
+    xml2js.parseString expected, {
+        preserveChildrenOrder: true
+      }, (err, obj) ->
+      opts = renderOpts: {pretty: true}, preserveChildrenOrder: true
+      builder = new xml2js.Builder opts
+      actual = builder.buildObject obj
+
+      diffeq expected, actual
+      test.finish()
