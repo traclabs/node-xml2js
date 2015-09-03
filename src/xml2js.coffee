@@ -219,6 +219,8 @@ class exports.Parser extends events.EventEmitter
     if @options.preserveChildrenOrder
       @options.explicitCharkey = true;
 
+    @options.ignoreForChildCount = [@options.childkey, @options.attrkey, @options.charkey, '#name']
+
     @reset()
 
   processAsync: =>
@@ -362,7 +364,15 @@ class exports.Parser extends events.EventEmitter
             obj = obj[charkey]
 
       else if @options.preserveChildrenOrder
-        index = if s then Math.max(Object.keys(s).length - 2, 0) else 0
+        index = 0
+
+        if s
+          count = 0
+          for own key of s
+            if key not in @options.ignoreForChildCount
+              count += if Array.isArray(s[key]) then s[key].length else 1
+          index = count
+
         obj[@options.sortkey] = index
 
       # check whether we closed all the open tags
