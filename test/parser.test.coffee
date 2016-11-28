@@ -186,6 +186,22 @@ module.exports =
     equ r.sample.$$[16].$$[2]['#name'], '__text__'
     equ r.sample.$$[16].$$[2]._, ' in the middle')
 
+  'test preserveChildrenOrder without explicitChildren has correct default sortkey': skeleton(preserveChildrenOrder: true, (r) ->
+    console.log 'Result object: ' + util.inspect r, false, 10
+    equ r.sample.ordertest[0].one[0]['_'], '1'
+    equ r.sample.ordertest[0].one[1]['_'], '4'
+    equ r.sample.ordertest[0].one[0]['#index'], 0
+    equ r.sample.ordertest[0].one[1]['#index'], 3
+    )
+
+  'test preserveChildrenOrder without explicitChildren has correct optional sortkey': skeleton(preserveChildrenOrder: true, sortkey: '#sortkey', (r) ->
+    console.log 'Result object: ' + util.inspect r, false, 10
+    equ r.sample.ordertest[0].one[0]['_'], '1'
+    equ r.sample.ordertest[0].one[1]['_'], '4'
+    equ r.sample.ordertest[0].one[0]['#sortkey'], 0
+    equ r.sample.ordertest[0].one[1]['#sortkey'], 3
+    )
+
   'test element without children': skeleton(explicitChildren: true, (r) ->
     console.log 'Result object: ' + util.inspect r, false, 10
     equ r.sample.$$.nochildrentest[0].$$, undefined)

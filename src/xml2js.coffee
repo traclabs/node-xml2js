@@ -363,7 +363,7 @@ class exports.Parser extends events.EventEmitter
           if Object.keys(obj).length == 1 and charkey of obj and not @EXPLICIT_CHARKEY
             obj = obj[charkey]
 
-      else if @options.preserveChildrenOrder
+      else if @options.preserveChildrenOrder and typeof obj is 'object'
         index = 0
 
         if s
