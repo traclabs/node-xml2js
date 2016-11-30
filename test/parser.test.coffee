@@ -236,8 +236,11 @@ module.exports =
   'test default empty tag result': skeleton(undefined, (r) ->
     assert.deepEqual r.sample.emptytest, [''])
 
-  'test empty tag result specified null': skeleton(emptyTag: null, (r) ->
+  'test empty tag result specified null without explicitcharkey': skeleton(emptyTag: null, (r) ->
     equ r.sample.emptytest[0], null)
+
+  'test empty tag result specified null with explicitcharkey': skeleton(emptyTag: null, explicitCharkey: true, (r) ->
+    assert.deepEqual r.sample.emptytest[0], { _: '' })
 
   'test invalid empty XML file': skeleton(__xmlString: ' ', (r) ->
     equ r, null)

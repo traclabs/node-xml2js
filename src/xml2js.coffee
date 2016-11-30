@@ -245,6 +245,12 @@ class exports.Parser extends events.EventEmitter
       obj[key] = [obj[key]] if not (obj[key] instanceof Array)
       obj[key].push newValue
 
+  emptyTagsAreSpecial: =>
+    if ((@options.emptyTag != null and @EXPLICIT_CHARKEY) or (not @options.emptyTag and not @EXPLICIT_CHARKEY))
+      true
+    else
+      false
+
   reset: =>
     # remove all previous listeners for events, to prevent event listener
     # accumulation
@@ -311,7 +317,7 @@ class exports.Parser extends events.EventEmitter
 
       s = stack[stack.length - 1]
       # remove the '#' key altogether if it's blank
-      if obj[charkey].match(/^\s*$/) and not cdata
+      if obj[charkey].match(/^\s*$/) and not cdata and @emptyTagsAreSpecial()
         emptyStr = obj[charkey]
         delete obj[charkey]
       else
@@ -323,7 +329,7 @@ class exports.Parser extends events.EventEmitter
         if Object.keys(obj).length == 1 and charkey of obj and not @EXPLICIT_CHARKEY
           obj = obj[charkey]
 
-      if (isEmpty obj)
+      if (isEmpty obj) and @emptyTagsAreSpecial()
         obj = if @options.emptyTag != '' then @options.emptyTag else emptyStr
 
       if @options.validator?
