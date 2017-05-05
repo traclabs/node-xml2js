@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "sax": ">=0.6.0",
-    "xmlbuilder": ">=2.4.6"
+    "xmlbuilder": "^8.2.0"
   },
   "devDependencies": {
     "coffee-script": ">=1.9.0",
